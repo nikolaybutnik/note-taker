@@ -28,7 +28,24 @@ app.get("/api/notes", function (req, res) {
 });
 
 // POST API notes route
-app.post("/api/notes", function (req, res) {});
+app.post("/api/notes", function (req, res) {
+  const note = req.body;
+  // Read the existing db.json and convert the string into an object. Push the new note onto the resulting array.
+  fs.readFile("db/db.json", "utf8", (error, data) => {
+    if (error) throw error;
+    const allNotes = JSON.parse(data);
+    allNotes.push(note);
+    // Assign ID number to each object in array, to be accessed when deleting.
+    allNotes.forEach(function (item, index, array) {
+      item.id = index;
+    });
+    // Update the db.json with new array in string format
+    fs.writeFile("db/db.json", JSON.stringify(allNotes), (error) => {
+      if (error) throw error;
+      res.json(allNotes);
+    });
+  });
+});
 
 // DELETE API notes route
 app.delete("/api/notes:id", function (req, res) {
