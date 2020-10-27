@@ -7,25 +7,23 @@ const PORT = 3000;
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(express.static("public"));
 
 // Home page route
 app.get("/", function (req, res) {
-  res.sendFile(path.join(__dirname, "public/index.html"));
+  res.sendFile(path.join(__dirname, "./public/index.html"));
 });
 
 // Notes page route
 app.get("/notes", function (req, res) {
-  res.sendFile(path.join(__dirname, "public/notes.html"));
+  res.sendFile(path.join(__dirname, "./public/notes.html"));
 });
 
 // GET API notes route
 app.get("/api/notes", function (req, res) {
-  fs.readFile("db/db.json", "utf8", function (error, data) {
-    if (error) {
-      return console.log(error);
-    }
-    text = JSON.parse(data);
-    res.send(text);
+  fs.readFile("db/db.json", "utf8", (error, data) => {
+    if (error) throw error;
+    res.json(JSON.parse(data));
   });
 });
 
@@ -33,7 +31,9 @@ app.get("/api/notes", function (req, res) {
 app.post("/api/notes", function (req, res) {});
 
 // DELETE API notes route
-app.delete("/api/notes:id", function (req, res) {});
+app.delete("/api/notes:id", function (req, res) {
+  console.log(req.params.id);
+});
 
 // Port listener
 app.listen(PORT, () => console.log("App listening on PORT " + PORT));
