@@ -21,8 +21,8 @@ app.get("/notes", function (req, res) {
 
 // GET API notes route
 app.get("/api/notes", function (req, res) {
-  fs.readFile("db/db.json", "utf8", (error, data) => {
-    if (error) throw error;
+  fs.readFile("db/db.json", "utf8", (err, data) => {
+    if (err) throw error;
     res.json(JSON.parse(data));
   });
 });
@@ -31,8 +31,8 @@ app.get("/api/notes", function (req, res) {
 app.post("/api/notes", function (req, res) {
   const note = req.body;
   // Read the existing db.json and convert the string into an object. Push the new note onto the resulting array.
-  fs.readFile("db/db.json", "utf8", (error, data) => {
-    if (error) throw error;
+  fs.readFile("db/db.json", "utf8", (err, data) => {
+    if (err) throw err;
     const allNotes = JSON.parse(data);
     allNotes.push(note);
     // Assign ID number to each object in array, to be accessed when deleting.
@@ -40,16 +40,29 @@ app.post("/api/notes", function (req, res) {
       item.id = index;
     });
     // Update the db.json with new array in string format
-    fs.writeFile("db/db.json", JSON.stringify(allNotes), (error) => {
-      if (error) throw error;
+    fs.writeFile("db/db.json", JSON.stringify(allNotes), (err) => {
+      if (err) throw err;
       res.json(allNotes);
     });
   });
 });
 
 // DELETE API notes route
-app.delete("/api/notes:id", function (req, res) {
-  console.log(req.params.id);
+app.delete("/api/notes/:id", function (req, res) {
+  const { id } = req.params;
+  fs.readFile("db/db.json", "utf8", (error, data) => {
+    if (error) throw error;
+    // Get the current notes in db.json.
+    let allNotes = JSON.parse(data);
+    // Filter the array not to include the id we want to delete.
+    // != is used instead of !== because we're comparing a number to a string.
+    allNotes = allNotes.filter((item) => item.id != id);
+    // Update the db.json with new array in string format
+    fs.writeFile("db/db.json", JSON.stringify(allNotes), (err) => {
+      if (err) throw err;
+      res.send("Note deleted.");
+    });
+  });
 });
 
 // Port listener
