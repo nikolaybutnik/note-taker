@@ -37,7 +37,7 @@ app.post("/api/notes", function (req, res) {
     allNotes.push(note);
     // Assign ID number to each object in array, to be accessed when deleting.
     allNotes.forEach(function (item, index, array) {
-      item.id = index;
+      item.id = "ID" + index;
     });
     // Update the db.json with new array in string format
     fs.writeFile("db/db.json", JSON.stringify(allNotes), (err) => {
@@ -55,8 +55,7 @@ app.delete("/api/notes/:id", function (req, res) {
     // Get the current notes in db.json.
     let allNotes = JSON.parse(data);
     // Filter the array not to include the id we want to delete.
-    // != is used instead of !== because we're comparing a number to a string.
-    allNotes = allNotes.filter((item) => item.id != id);
+    allNotes = allNotes.filter((item) => item.id !== id);
     // Update the db.json with new array in string format
     fs.writeFile("db/db.json", JSON.stringify(allNotes), (err) => {
       if (err) throw err;
